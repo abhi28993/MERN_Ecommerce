@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, isRejectedWithValue } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, rejectWithValue } from "@reduxjs/toolkit";
 import api from "../../api/api";
 
 export const admin_login = createAsyncThunk(
@@ -10,7 +10,7 @@ export const admin_login = createAsyncThunk(
         withCredentials: true,
       });
     } catch (error) {
-      return isRejectedWithValue(error.response.data);
+        return rejectWithValue(error.response.data);
     }
   }
 );
