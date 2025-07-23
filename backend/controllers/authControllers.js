@@ -1,6 +1,7 @@
 import adminModel from "../models/adminModel.js"
 import responseReturn from "../utiles/response.js";
 import bcrypt from "bcrypt";
+import createToken from "../utiles/tokenCreate.js"
 
 class authControllers {
     admin_login = async (req, res) => {
@@ -11,10 +12,14 @@ class authControllers {
                 const match = await bcrypt.compare(password, admin.password)
                 console.log(match)
                 if (match) {
-                    const token =  await createToken({
+                    const token = await createToken({
                         id: admin.id,
-                        role:admin.role
+                        role: admin.role
+                    });
+                    res.cookie('accessToken', token, {
+                        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
                     })
+                    responseReturn(res, 200, { token, message: "Login Success" })
                 } else {
                     responseReturn(res, 404, { error: "password Wrong" })
                 }
@@ -25,6 +30,33 @@ class authControllers {
             responseReturn(res, 500, { error: error.message })
         }
     }
+
+
+    // End Method
+
+
+    getUser = async (req, res) => {
+
+        const { id, role } = req;
+        try {
+            if (role === 'admin') {
+                const user = await adminModel.findById(id);
+                responseReturn(res, 200, { userInfo: user });
+            } else {
+                console.log('Seller Info')
+                // responseReturn()
+            }
+
+        } catch (error) {
+            console.log(error.message)
+        }
+
+    }
+
+    // End Method
+
+
+
 }
 
 

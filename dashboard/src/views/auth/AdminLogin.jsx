@@ -1,11 +1,16 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
-import { useDispatch } from "react-redux";
-import { admin_login } from "../../store/Reducers/authReducers";
+import { useDispatch, useSelector } from "react-redux";
+import { admin_login, messageClear } from "../../store/Reducers/authReducers";
+import { PropagateLoader } from 'react-spinners';
+import toast from 'react-hot-toast';
 
 const AdminLogin = () => {
+
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { loader, errorMessage, successMessage } = useSelector(state => state.auth || {})
 
   const [state, setState] = useState({
     email: "",
@@ -21,8 +26,36 @@ const AdminLogin = () => {
 
   const submit = (e) => {
     e.preventDefault();
+    console.log(state, "testStage1")
     dispatch(admin_login(state));
   };
+
+  const overrideStyle = {
+    display: 'flex',
+    margin: '0 auto',
+    height: '24px',
+    justifyContent: 'center',
+    alignItem: 'center'
+
+  }
+
+
+  useEffect(() => {
+    if (errorMessage) {
+      toast.error(errorMessage);
+      dispatch(messageClear())
+
+    } 
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(messageClear());
+      navigate("/")
+
+    } 
+  }, [errorMessage, successMessage]);
+
+
+
   return (
     <div className="min-w-screen min-h-screen bg-[#cdcae9] flex justify-center items-center">
       <div className="w-[350px] text-[#ffffff] p-2">
@@ -33,6 +66,7 @@ const AdminLogin = () => {
             </div>
           </div>
           <form onSubmit={submit}>
+
             <div className="flex flex-col w-full gap-1 mb-3">
               <label htmlFor="email">Email</label>
               <input
@@ -59,8 +93,10 @@ const AdminLogin = () => {
                 required
               />
             </div>
-            <button className="bg-slate-800 w-full hover:shadow-blue-300/50 py-2 hover:shadow-lg text-white rounded-md px-7">
-              Log In{" "}
+            <button disabled={loader ? true : false} className="bg-slate-800 w-full hover:shadow-blue-300/50 py-2 hover:shadow-lg text-white rounded-md px-7">
+              {
+                loader ? <PropagateLoader color="#fff" cssOverride={overrideStyle} /> : 'Login'
+              }
             </button>
           </form>
         </div>

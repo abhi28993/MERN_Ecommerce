@@ -1,9 +1,9 @@
-import React from 'react'
+import { adminRoutes} from "./adminRoutes";
+import { sellerRoutes } from "./sellerRoutes";
 
-const privateRoutes = () => {
-  return (
-    <div>privateRoutes</div>
-  )
-}
 
-export default privateRoutes
+export const privateRoutes = [ 
+   ...adminRoutes, 
+   ...sellerRoutes,
+ 
+] 
